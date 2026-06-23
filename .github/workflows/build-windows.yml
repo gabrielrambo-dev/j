@@ -28,8 +28,12 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
-      - name: Gerar instalador Windows
+      - name: Gerar instalador Windows sem publicar
         run: npm run build:win
+
+      - name: Listar arquivos gerados
+        shell: pwsh
+        run: Get-ChildItem -Recurse dist
 
       - name: Enviar instalador
         uses: actions/upload-artifact@v4
