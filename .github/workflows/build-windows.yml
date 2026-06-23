@@ -1,0 +1,38 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Validar arquivos
+        shell: pwsh
+        run: |
+          if (!(Test-Path "app/index.html")) { throw "app/index.html não encontrado" }
+          if (!(Test-Path "main.js")) { throw "main.js não encontrado" }
+          Select-String -Path "app/index.html" -Pattern "CodeStudy Pro Desktop"
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Gerar instalador Windows
+        run: npm run build:win
+
+      - name: Enviar instalador
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodeStudy-Pro-Desktop-Installer
+          path: dist/*Setup*.exe
